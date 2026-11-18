@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+
+# 遊戲存檔與執行期檔案（每台機器自己的）
+save.json
+save.json.tmp
+meta.json
+error.log
+tests/screen_probe.json
+
+# Godot 匯入快取與建置產物
+hd2d/.godot/
+hd2d/android/
+hd2d/build/*
+!hd2d/build/.gdignore
+*.apk
+*.aab
+*.idsig
+
+# 簽章金鑰絕不進版控
+*.keystore
+*.jks

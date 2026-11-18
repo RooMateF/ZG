@@ -1,0 +1,24 @@
+; ZG HD-2D 外觀測試專案（Godot 4.7）
+; 平台：PC 優先。Android 匯出設定保留當移植入口（見 docs/HD2D_PLAN.md）。
+config_version=5
+
+[application]
+
+config/name="ZG HD2D Test"
+run/main_scene="res://main.tscn"
+config/features=PackedStringArray("4.7", "Forward Plus")
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/handheld/orientation=0
+
+[rendering]
+
+; PC 用 Forward+（有 SSAO、體積霧）；手機平台自動退回 Mobile 模式。
+renderer/rendering_method="forward_plus"
+renderer/rendering_method.mobile="mobile"
+textures/vram_compression/import_etc2_astc=true
