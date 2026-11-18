@@ -491,6 +491,8 @@ Character design sheet, single character, full body, front view and three-quarte
 
 **行屍**
 
+遊戲用小人保留角色原本的衣著和體型。眼睛是無瞳孔的灰白色，表情空白。咬傷用破袖、歪斜的領口和暗紅血跡表現。場景外觀有 16 種路人，大專學生、警察、上班族和碼頭工人各 4 種。
+
 ```
 Creature design sheet, single figure, full body, front view and three-quarter view side by side. A recently turned infected city resident from a Taiwanese town, still wearing ordinary clothes (office shirt, convenience-store uniform or house clothes), stiff slumped posture, head tilted toward a sound, clouded unfocused eyes, greyish skin, a bite wound on the forearm with blackened edges and thin dark veins spreading outward. Unsettling because recognisably human. No explicit gore.
 ```
@@ -700,7 +702,7 @@ Pixel art sprite sheet of a single character for a top-down three-quarter view J
 |---|---|---|
 | 主角、八位生存者、符婕 | 10 | A、B、C、D |
 | 四個勢力代表（巡佐、修女、海哥、少校） | 4 | A、D。他們站在定點不走動 |
-| 感染者：行屍、疾走者、腫脹者 | 3 種 | A、B、C。行屍建議做兩三種外觀輪替 |
+| 感染者：行屍、疾走者、腫脹者 | 3 種 | A、B、C。行屍使用五組共 32 種外觀輪替 |
 | 人類敵人：掠奪者、士兵 | 2 種 | A、B、C |
 
 ### 順序
