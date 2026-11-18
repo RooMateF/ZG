@@ -1,0 +1,15 @@
+{
+ "frame_w": 64,
+ "frame_h": 64,
+ "cols": 4,
+ "rows": 3,
+ "row_names": [
+  "down",
+  "side_right",
+  "up"
+ ],
+ "foot_pad": 4,
+ "body_h": 58,
+ "cm": 189,
+ "source": "walker_dock_01_turn.png"
+}

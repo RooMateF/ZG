@@ -1,0 +1,15 @@
+{
+ "frame_w": 64,
+ "frame_h": 64,
+ "cols": 4,
+ "rows": 3,
+ "row_names": [
+  "down",
+  "side_right",
+  "up"
+ ],
+ "foot_pad": 4,
+ "body_h": 52,
+ "cm": 164,
+ "source": "walker_police_03_turn.png"
+}

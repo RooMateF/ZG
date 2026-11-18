@@ -130,7 +130,7 @@ func _build_env() -> void:
 	add_child(fill)
 
 	lamp = OmniLight3D.new()                        # 暖色檯燈
-	lamp.position = Vector3(-3.2, 1.55, -1.8)
+	lamp.position = Vector3(-3.2, 1.25, -2.7)       # 電視櫃上那盞檯燈的燈罩前面
 	lamp.light_color = Color(1.0, 0.72, 0.38)
 	lamp.light_energy = 2.6
 	lamp.omni_range = 7.0
@@ -194,36 +194,98 @@ func _box(size: Vector3, pos: Vector3, mat: Material, solid: bool = false) -> Me
 	return mi
 
 
+func _face_mat(file: String, mirror: bool = false) -> StandardMaterial3D:
+	var m := StandardMaterial3D.new()
+	m.albedo_texture = load("res://art/furniture/%s.png" % file)
+	m.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+	m.roughness = 0.9
+	if mirror:
+		m.uv1_scale = Vector3(-1, 1, 1)
+	return m
+
+
+func _quad(parent: Node3D, size: Vector2, pos: Vector3, rot: Vector3, mat: Material) -> void:
+	var q := QuadMesh.new()
+	q.size = size
+	var mi := MeshInstance3D.new()
+	mi.mesh = q
+	mi.position = pos
+	mi.rotation_degrees = rot
+	mi.material_override = mat
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF      # 影子由下面那個看不見的方塊投
+	parent.add_child(mi)
+
+
+func _furniture(id: String, pos: Vector3, yaw: float = 0.0, solid: bool = true) -> Vector3:
+	# 美術交的方塊家具：art/furniture/<代號>_front、_top、_side 三張貼圖，像素密度和小人一樣。
+	# 大小直接從貼圖的像素數算，所以換圖就會換尺寸。pos 是底面中心。回傳寬、高、深。
+	var front := _face_mat(id + "_front")
+	var side := _face_mat(id + "_side")
+	var w: float = front.albedo_texture.get_width() * SHEET_PIXEL
+	var h: float = front.albedo_texture.get_height() * SHEET_PIXEL
+	var d: float = side.albedo_texture.get_width() * SHEET_PIXEL
+	var root := Node3D.new()
+	root.position = pos + Vector3(0, h / 2, 0)
+	root.rotation_degrees.y = yaw
+	add_child(root)
+	_quad(root, Vector2(w, h), Vector3(0, 0, d / 2), Vector3.ZERO, front)                       # 正面
+	_quad(root, Vector2(w, h), Vector3(0, 0, -d / 2), Vector3(0, 180, 0), front)                # 背面，暫用正面的圖
+	_quad(root, Vector2(w, d), Vector3(0, h / 2, 0), Vector3(-90, 0, 0), _face_mat(id + "_top"))   # 頂面：圖的上緣朝後
+	_quad(root, Vector2(d, h), Vector3(w / 2, 0, 0), Vector3(0, 90, 0), side)                   # 右側：圖的左緣接正面
+	_quad(root, Vector2(d, h), Vector3(-w / 2, 0, 0), Vector3(0, -90, 0), _face_mat(id + "_side", true))   # 左側：鏡射
+	var caster := MeshInstance3D.new()
+	var bm := BoxMesh.new()
+	bm.size = Vector3(w, h, d) * 0.98
+	caster.mesh = bm
+	caster.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
+	root.add_child(caster)
+	if solid and pos.y < 0.3:                                                                   # 疊在別的東西上面的不擋路
+		var turned: bool = absf(fmod(absf(yaw), 180.0) - 90.0) < 45.0
+		var ow: float = d if turned else w
+		var od: float = w if turned else d
+		obstacles.append(Rect2(pos.x - ow / 2, pos.z - od / 2, ow, od))
+	return Vector3(w, h, d)
+
+
+func _prop(file: String, pos: Vector3) -> Sprite3D:
+	# 形狀不規則的小東西：透明底的單張圖，當成立牌放。四邊留白 2 像素。pos 是底部中心。
+	var tex: Texture2D = load("res://art/furniture/%s.png" % file)
+	var s := Sprite3D.new()
+	s.texture = tex
+	s.pixel_size = SHEET_PIXEL
+	s.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+	s.billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
+	s.shaded = true
+	s.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
+	s.position = pos + Vector3(0, (tex.get_height() * 0.5 - 2.0) * SHEET_PIXEL, 0)
+	add_child(s)
+	return s
+
+
 func _build_room() -> void:
 	var floor_m := _tile_mat("floor_planks")
 	var wall_m := _tile_mat("wall_plaster")
-	var wood_m := _mat(_pixel_tex(16, Color(0.30, 0.19, 0.11), 0.05, 4))
-	var cloth_m := _mat(_pixel_tex(16, Color(0.24, 0.30, 0.40), 0.04))
-	var carton_m := _mat(_pixel_tex(16, Color(0.66, 0.52, 0.35), 0.03))                   # 瓦楞紙箱的顏色，沒有木板格線
+	var back := -ROOM_D / 2 + 0.15                                                           # 後牆的牆面
 
 	_box(Vector3(ROOM_W, 0.2, ROOM_D), Vector3(0, -0.1, 0), floor_m)                       # 地板
 	_box(Vector3(ROOM_W, 3.2, 0.3), Vector3(0, 1.6, -ROOM_D / 2), wall_m)                   # 後牆
 	_box(Vector3(0.3, 3.2, ROOM_D), Vector3(-ROOM_W / 2, 1.6, 0), wall_m)                   # 左牆
 	_box(Vector3(0.3, 3.2, ROOM_D), Vector3(ROOM_W / 2, 1.6, 0), wall_m)                    # 右牆
-	_box(Vector3(2.6, 0.9, 1.0), Vector3(1.8, 0.45, -2.6), cloth_m, true)                   # 沙發
-	_box(Vector3(2.6, 0.9, 0.3), Vector3(1.8, 1.0, -3.0), cloth_m, true)
-	_box(Vector3(1.4, 0.7, 0.8), Vector3(-3.2, 0.35, -1.8), wood_m, true)                   # 桌子
-	_box(Vector3(1.6, 2.4, 0.5), Vector3(-0.6, 1.2, -3.1), wood_m, true)                    # 櫃子
-	# 前景擺設（會被近景模糊）。背景是現代都市，用搬家紙箱，不用木箱、木桶那類東西。
-	_box(Vector3(0.9, 0.7, 0.7), Vector3(4.6, 0.35, 2.6), carton_m, true)
-	_box(Vector3(0.7, 0.5, 0.6), Vector3(4.55, 0.95, 2.6), carton_m, true)                  # 疊在上面的小箱
-	_box(Vector3(0.9, 0.7, 0.7), Vector3(-4.9, 0.35, 2.9), carton_m, true)
-	# 窗戶：會發光的冷色面板 + 檯燈燈泡（都是 emission，用來看光暈）
+	# 家具：美術總監交的現代公寓家具（提交 afdf612），每件正面、頂面、側面各一張貼圖
+	_furniture("sofa", Vector3(1.8, 0, back + 0.45))
+	_furniture("coffee_table", Vector3(1.8, 0, -1.5))
+	var tv := _furniture("tv_console", Vector3(-3.0, 0, back + 0.26))
+	_prop("desk_lamp", Vector3(-3.35, tv.y, back + 0.26))                                   # 檯燈放在電視櫃上
+	_furniture("moving_box", Vector3(3.7, 0, back + 0.3), 8.0)                              # 沙發旁邊還沒拆的紙箱
+	_furniture("moving_box", Vector3(4.35, 0, back + 0.35), -12.0)
+	_furniture("moving_box", Vector3(3.95, 0.40, back + 0.32), 20.0)
+	# 前景擺設（會被近景模糊）
+	_furniture("moving_box", Vector3(4.6, 0, 2.6), 10.0)
+	_furniture("moving_box", Vector3(4.55, 0.40, 2.6), -14.0)
+	_furniture("moving_box", Vector3(-4.9, 0, 2.9), -8.0)
+	# 窗戶：會發光的冷色面板（emission，用來看光暈）
 	_box(Vector3(1.8, 1.2, 0.05), Vector3(4.0, 1.9, -ROOM_D / 2 + 0.18),
 		_mat(_pixel_tex(8, Color(0.5, 0.62, 0.95), 0.03, 4), Vector2.ONE, Color(0.45, 0.6, 1.0)))
-	var bulb := MeshInstance3D.new()
-	var sph := SphereMesh.new()
-	sph.radius = 0.16
-	sph.height = 0.32
-	bulb.mesh = sph
-	bulb.position = Vector3(-3.2, 0.95, -1.8)
-	bulb.material_override = _mat(_pixel_tex(4, Color(1.0, 0.85, 0.55), 0.0), Vector2.ONE, Color(1.0, 0.75, 0.4))
-	add_child(bulb)
 
 
 # ------------------------------------------------------------ 像素角色（用字元畫，免美術檔）
@@ -312,7 +374,11 @@ func _build_actors() -> void:
 	var fujie := _sheet_actor("fujie", Vector3(1.4, 0, 0.3))                                        # 符婕
 	fujie.frame_coords = Vector2i(0, 1)
 	fujie.flip_h = true                                                                            # 朝左，看向許晏
-	_actor(_sprite_tex(HERO_A, PAL, false, Color(0.62, 0.85, 0.60)), Vector3(4.2, 0, -0.8), true)   # 行屍：還沒有美術圖，暫用色塊
+	# 行屍：美術總監交了 32 種外觀（提交 873ea5a），這裡先放三種。都朝左，看向主角這邊
+	for w in [["walker", Vector3(4.3, 0, -1.3)], ["walker_police_01", Vector3(3.3, 0, -0.2)], ["walker_office_02", Vector3(4.0, 0, 1.1)]]:
+		var z := _sheet_actor(w[0], w[1])
+		z.frame_coords = Vector2i(0, 1)
+		z.flip_h = true
 
 
 # ------------------------------------------------------------ 介面

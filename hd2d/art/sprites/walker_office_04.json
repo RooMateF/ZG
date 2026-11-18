@@ -1,0 +1,15 @@
+{
+ "frame_w": 64,
+ "frame_h": 64,
+ "cols": 4,
+ "rows": 3,
+ "row_names": [
+  "down",
+  "side_right",
+  "up"
+ ],
+ "foot_pad": 4,
+ "body_h": 55,
+ "cm": 174,
+ "source": "walker_office_04_turn.png"
+}
