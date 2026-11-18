@@ -2,10 +2,10 @@
 
 ## 1. 拿到專案
 
-把下面的網址換成你的 GitHub 倉庫網址：
+倉庫是私人的，第一次 clone 時 Git 會跳出 GitHub 登入視窗，用 RooMateF 登入。
 
 ```
-git clone https://github.com/RooMateF/倉庫名稱.git ZG
+git clone https://github.com/RooMateF/ZG.git
 ```
 
 存檔（`save.json`、`meta.json`）不在版控裡。想帶著走就手動複製到專案根目錄。

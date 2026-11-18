@@ -107,7 +107,8 @@
 - [x] 版控（git）
 - [x] 引擎與建置流程
 - [x] 平台決定（PC）
-- [ ] 專案推到 GitHub，搬到有顯卡的電腦
+- [x] 專案推到 GitHub（https://github.com/RooMateF/ZG ，私人倉庫）
+- [ ] 搬到有顯卡的電腦（步驟在 `docs/NEW_MACHINE.md`）
 - [ ] 在有顯卡的電腦上實際看 Forward+ 的畫面
 - [ ] 決定美術來源
 - [ ] 定規則與畫面之間的介面格式
