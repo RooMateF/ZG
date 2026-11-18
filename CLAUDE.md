@@ -8,6 +8,7 @@
 
 1. `docs/HD2D_PLAN.md`：改版計畫、現況、架構決定。
 2. `docs/GAME_DESIGN_HD2D.md`：HD-2D 版的玩法設計。第一節是使用者的定案，不要推翻。
+   `docs/FIRST_BUILD.md`：初版（住宅區第一棟房子）的工作清單，做完一項勾一項。
 3. `docs/ART_DIRECTOR.md`：三方分工、美術的硬性要求、檔案交換方式。
 4. `docs/handoff/art_to_eng.md` 和 `docs/handoff/eng_to_art.md`：和美術總監之間最新的來往，最新的在最上面。
 5. `hd2d/README.md`：測試專案和工具怎麼用。

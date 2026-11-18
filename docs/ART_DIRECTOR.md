@@ -22,6 +22,7 @@
 2. `docs/ART_TRACKER.md`：每個角色每組圖的進度。這份由你維護。
 3. `docs/handoff/eng_to_art.md`：工程這邊給你的最新狀況和問題。
 4. `docs/GAME_DESIGN_HD2D.md`：HD-2D 版的玩法設計。第二節是城市地圖和要畫的套件清單，第五節是戰鬥，會決定家具怎麼畫。
+   `docs/FIRST_BUILD.md`：初版（住宅區第一棟房子）的工作清單，第二節是初版要畫的東西。
 5. `docs/HD2D_PLAN.md`：整個改版的計畫、決定和階段。看「現況」和「架構決定」兩節就夠。
 
 `DESIGN.md` 是文字版的完整規則，很長，需要查某個機制時再看。
