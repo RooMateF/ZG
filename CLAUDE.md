@@ -6,9 +6,11 @@
 
 ## 接手時先讀
 
+0. `docs/ENG_STATUS.md`：換電腦前寫的工程交接。做到哪、沒做完的、排好要分給多個 Agent 的工作。**先讀這份。**
 1. `docs/HD2D_PLAN.md`：改版計畫、現況、架構決定。
 2. `docs/GAME_DESIGN_HD2D.md`：HD-2D 版的玩法設計。第一節是使用者的定案，不要推翻。
    `docs/FIRST_BUILD.md`：初版（住宅區第一棟房子）的工作清單，做完一項勾一項。
+   `docs/RULES_BRIDGE.md`：Godot 和 Python 規則之間的溝通格式。HD-2D 的規則在 `zg/hd/`，文字版的 `zg/` 其他檔案不要為了 HD-2D 去改。
 3. `docs/ART_DIRECTOR.md`：三方分工、美術的硬性要求、檔案交換方式。
 4. `docs/handoff/art_to_eng.md` 和 `docs/handoff/eng_to_art.md`：和美術總監之間最新的來往，最新的在最上面。
 5. `hd2d/README.md`：測試專案和工具怎麼用。
@@ -37,6 +39,12 @@
 
 ```
 python -X utf8 tests/test_endings.py
+```
+
+HD-2D 版規則的測試（`zg/hd/`，應該全部通過）：
+
+```
+python -X utf8 tests/test_hd.py
 ```
 
 檢查 Godot 腳本有沒有錯（不需要顯示卡，沒有錯誤訊息就是通過）：

@@ -42,7 +42,11 @@ python play.py
 python -X utf8 tests/test_endings.py
 ```
 
-測試應該全部通過。
+測試應該全部通過。HD-2D 版的規則也有一份測試，同樣不需要任何套件：
+
+```
+python -X utf8 tests/test_hd.py
+```
 
 美術匯入工具（`hd2d/tools/` 裡的 Python 腳本）需要兩個套件：
 
@@ -100,7 +104,9 @@ powershell -ExecutionPolicy Bypass -File hd2d\shot.ps1 -Gpu -Out hd2d\build\gpu.
 
 開頭可以直接跟它說：「讀 `CLAUDE.md` 列的文件，告訴我現在做到哪裡。」
 
-目前的進度和下一步在 `docs/HD2D_PLAN.md` 的「現況」和「下一步」。
+做到哪、沒做完的、接下來要分給多個 Agent 的工作，寫在 `docs/ENG_STATUS.md`。整體的進度和下一步在 `docs/HD2D_PLAN.md` 的「現況」和「下一步」。
+
+換電腦後可以這樣開頭：「讀 `CLAUDE.md` 和 `docs/ENG_STATUS.md`，告訴我現在做到哪，然後照第四節把工作分給 Agent。」
 
 ## 8. Android 建置鏈（選用，移植入口）
 
