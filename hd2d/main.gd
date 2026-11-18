@@ -44,6 +44,7 @@ var shot_path := ""                # 截圖模式：啟動參數 -- --shot=路�
 var shot_after := 30
 var frame_no := 0
 var shot_started := false
+var lineup := false                # 檢查模式：啟動參數 -- --lineup，所有匯入的角色排成兩排
 var zh_font: SystemFont
 var panel: Control                 # 人物面板（P 開關）
 var panel_art: TextureRect
@@ -62,6 +63,8 @@ func _ready() -> void:
 			shot_after = int(a.substr(14))
 		elif a.begins_with("--panel="):
 			open_panel = a.substr(8)
+		elif a == "--lineup":
+			lineup = true
 	zh_font = SystemFont.new()
 	zh_font.font_names = PackedStringArray(["Noto Sans CJK TC", "Noto Sans TC", "Microsoft JhengHei", "sans-serif"])
 	_build_panel.call_deferred(open_panel)
@@ -130,7 +133,7 @@ func _build_env() -> void:
 	add_child(fill)
 
 	lamp = OmniLight3D.new()                        # 暖色檯燈
-	lamp.position = Vector3(-3.2, 1.25, -2.7)       # 電視櫃上那盞檯燈的燈罩前面
+	lamp.position = Vector3(-3.55, 1.45, -2.6)      # 電視櫃上那盞檯燈的燈罩前面
 	lamp.light_color = Color(1.0, 0.72, 0.38)
 	lamp.light_energy = 2.6
 	lamp.omni_range = 7.0
@@ -271,17 +274,21 @@ func _build_room() -> void:
 	_box(Vector3(ROOM_W, 3.2, 0.3), Vector3(0, 1.6, -ROOM_D / 2), wall_m)                   # 後牆
 	_box(Vector3(0.3, 3.2, ROOM_D), Vector3(-ROOM_W / 2, 1.6, 0), wall_m)                   # 左牆
 	_box(Vector3(0.3, 3.2, ROOM_D), Vector3(ROOM_W / 2, 1.6, 0), wall_m)                    # 右牆
-	# 家具：美術總監交的現代公寓家具（提交 afdf612），每件正面、頂面、側面各一張貼圖
-	_furniture("sofa", Vector3(1.8, 0, back + 0.45))
-	_furniture("coffee_table", Vector3(1.8, 0, -1.5))
-	var tv := _furniture("tv_console", Vector3(-3.0, 0, back + 0.26))
-	_prop("desk_lamp", Vector3(-3.35, tv.y, back + 0.26))                                   # 檯燈放在電視櫃上
-	_furniture("moving_box", Vector3(3.7, 0, back + 0.3), 8.0)                              # 沙發旁邊還沒拆的紙箱
-	_furniture("moving_box", Vector3(4.35, 0, back + 0.35), -12.0)
-	_furniture("moving_box", Vector3(3.95, 0.40, back + 0.32), 20.0)
+	# 家具：美術總監交的現代公寓家具（1.35 倍版，提交 4a38821），每件正面、頂面、側面各一張貼圖
+	# 沙發是兩件：椅座落地，椅背疊在椅座後緣上面（底面抬高一個椅座的高度，後緣對齊）
+	var seat_d: float = 40 * SHEET_PIXEL
+	var seat_z := back + seat_d / 2 + 0.02
+	var seat := _furniture("sofa_seat", Vector3(1.6, 0, seat_z))
+	_furniture("sofa_back", Vector3(1.6, seat.y, seat_z - 15.5 * SHEET_PIXEL))
+	_furniture("coffee_table", Vector3(1.6, 0, -1.2))
+	var tv := _furniture("tv_console", Vector3(-3.0, 0, back + 0.32))
+	_prop("desk_lamp", Vector3(-3.4, tv.y, back + 0.32))                                    # 檯燈放在電視櫃上
+	var box := _furniture("moving_box", Vector3(3.75, 0, back + 0.33), 8.0)                 # 沙發旁邊還沒拆的紙箱
+	_furniture("moving_box", Vector3(4.6, 0, back + 0.38), -12.0)
+	_furniture("moving_box", Vector3(4.1, box.y, back + 0.35), 20.0)
 	# 前景擺設（會被近景模糊）
 	_furniture("moving_box", Vector3(4.6, 0, 2.6), 10.0)
-	_furniture("moving_box", Vector3(4.55, 0.40, 2.6), -14.0)
+	_furniture("moving_box", Vector3(4.55, box.y, 2.6), -14.0)
 	_furniture("moving_box", Vector3(-4.9, 0, 2.9), -8.0)
 	# 窗戶：會發光的冷色面板（emission，用來看光暈）
 	_box(Vector3(1.8, 1.2, 0.05), Vector3(4.0, 1.9, -ROOM_D / 2 + 0.18),
@@ -367,15 +374,32 @@ func _actor(tex: Texture2D, pos: Vector3, flip: bool = false) -> Sprite3D:
 	return s
 
 
+func _build_lineup() -> void:
+	# 檢查模式：所有匯入的角色正面朝鏡頭排兩排，用來比身高、看有沒有切壞。前排生存者，後排勢力代表和敵人
+	var rows := [
+		[1.9, 0.72, ["hero", "mei", "fujie", "qiang", "chen", "kai", "lin", "jie", "fang", "bang"]],
+		[-0.6, 0.85, ["sgt", "sister", "hai", "major", "raider", "soldier", "walker", "runner", "bloater"]],
+	]
+	for r in rows:                                                      # 每排：z、間距、代號
+		var ids: Array = r[2]
+		for i in ids.size():
+			var s := _sheet_actor(ids[i], Vector3((i - (ids.size() - 1) / 2.0) * r[1], 0, r[0]))
+			if ids[i] == "hero":
+				player = s
+
+
 func _build_actors() -> void:
+	if lineup:
+		_build_lineup()
+		return
 	player = _sheet_actor("hero", Vector3(-0.6, 0, 0.9))                                           # 許晏
 	var mei := _sheet_actor("mei", Vector3(-2.3, 0, -0.5))                                         # 沈以美
 	mei.frame_coords = Vector2i(0, 1)
 	var fujie := _sheet_actor("fujie", Vector3(1.4, 0, 0.3))                                        # 符婕
 	fujie.frame_coords = Vector2i(0, 1)
 	fujie.flip_h = true                                                                            # 朝左，看向許晏
-	# 行屍：美術總監交了 32 種外觀（提交 873ea5a），這裡先放三種。都朝左，看向主角這邊
-	for w in [["walker", Vector3(4.3, 0, -1.3)], ["walker_police_01", Vector3(3.3, 0, -0.2)], ["walker_office_02", Vector3(4.0, 0, 1.1)]]:
+	# 敵人：行屍 32 種外觀（提交 873ea5a）先放一種，加上疾走者和腫脹者（提交 4a38821）。都朝左，看向主角這邊
+	for w in [["bloater", Vector3(4.2, 0, -0.9)], ["walker_police_01", Vector3(3.3, 0, 0.3)], ["runner", Vector3(2.3, 0, 1.6)]]:
 		var z := _sheet_actor(w[0], w[1])
 		z.frame_coords = Vector2i(0, 1)
 		z.flip_h = true

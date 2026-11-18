@@ -7,11 +7,13 @@
 #   powershell -ExecutionPolicy Bypass -File hd2d\shot.ps1
 #   powershell -ExecutionPolicy Bypass -File hd2d\shot.ps1 -Out C:\tmp\a.png -Size 1280x720 -Frames 30
 #   powershell -ExecutionPolicy Bypass -File hd2d\shot.ps1 -Gpu      (use the real graphics card)
+#   powershell -ExecutionPolicy Bypass -File hd2d\shot.ps1 -Lineup   (all characters lined up)
 param(
     [string]$Out = "",
     [int]$Frames = 20,
     [string]$Size = "960x540",
     [string]$Panel = "",
+    [switch]$Lineup,
     [switch]$Gpu
 )
 $ErrorActionPreference = "Stop"
@@ -52,6 +54,7 @@ $outFwd = $Out.Replace("\", "/")
 if (Test-Path $Out) { Remove-Item -Force $Out }
 $extra = ""
 if ($Panel) { $extra = " --panel=$Panel" }     # open the character panel on that character before the shot
+if ($Lineup) { $extra += " --lineup" }         # every imported character in two rows, for checking heights
 $ErrorActionPreference = "Continue"
 cmd /c "`"$Godot`" --path `"$Here`" --rendering-driver vulkan --rendering-method forward_plus --resolution $Size -- --shot=$outFwd --shot-frames=$Frames$extra 2>&1" | Select-String -Pattern "^SHOT |Using Device|SCRIPT ERROR|Parse Error|ERROR: .*res://"
 if (Test-Path $Out) {

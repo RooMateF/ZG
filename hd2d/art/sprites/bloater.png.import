@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://djrr8r57g1kjy"
-path="res://.godot/imported/sofa_front.png-bb99bb5391edf8e387f5f45850b0f19e.ctex"
+uid="uid://s82ykuwc0d6e"
+path="res://.godot/imported/bloater.png-718874c3b9a26648d13f0a0cfda98ceb.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/furniture/sofa_front.png"
-dest_files=["res://.godot/imported/sofa_front.png-bb99bb5391edf8e387f5f45850b0f19e.ctex"]
+source_file="res://art/sprites/bloater.png"
+dest_files=["res://.godot/imported/bloater.png-718874c3b9a26648d13f0a0cfda98ceb.ctex"]
 
 [params]
 
